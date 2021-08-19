@@ -49,6 +49,6 @@ In Python commands sometimes I write the code to import the relevant package and
 2sls of y on x1 with instrument z<br>(With control x2) |  `ivreg y x2 (x1 = z)` | `from statsmodels.sandbox.regression.gmm import IV2SLS`<br>`from patsy import dmatrices, dmatrix`<br>`y, x = dmatrices('y~ x1 + x2', df)`<br>`z = dmatrix('z + x2', df)`<br>`print(IV2SLS(y, x, instrument = z).fit().summary())` |
 2sls of y on x with instrument z<br>(Add Fixed Effects) | `xtset cvar`<br>`xtivreg2 y (x = z), fe` | `from statsmodels.sandbox.regression.gmm import IV2SLS`<br>`from patsy import dmatrices, dmatrix`<br>`y, x = dmatrices('y~ x + C(cvar)', df)`<br>`z = dmatrix('z + C(cvar)', df)`<br>`print(IV2SLS(y, x, instrument = z).fit().summary())` |
 | _**Plots**_           |               |                 |
-| Histogram            |  `histogram x`   | `%matplotlib inline`<br>`import matplotlib.pyplot as plt`<br>`plt.hist(df.x)` |
-| Scatter plot         | `scatter y x, xlab(x) ylab(y)` | `import matplotlib.pyplot as plt`<br>`plt.scatter(df.x, df.y)`<br>`plt.xlabel("x-label")`<br> `plt.ylabel("y-label")`<br> `plt.show()` |
+| Simple histogram            |  `histogram x`   | `%matplotlib inline`<br>`import matplotlib.pyplot as plt`<br>`plt.hist(df.x)` |
+| Simple scatterplot         | `scatter y x, xlab(x) ylab(y)` | `import matplotlib.pyplot as plt`<br>`plt.scatter(df.x, df.y)`<br>`plt.xlabel("x-label")`<br> `plt.ylabel("y-label")`<br> `plt.show()` |
 
