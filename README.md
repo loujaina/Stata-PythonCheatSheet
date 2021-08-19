@@ -1,6 +1,21 @@
 # Stata - Python Cheat Sheet
 
-| Function            | Stata Command |  Python Command | 
+N.B.: This Cheat Sheet is work-in-progress. I keep on adding commands as I learn them. 
+
+#### Below are the list of Python Libraries that I always upload before I start any work
+* `import numpy as np`
+* `import pandas as pd`
+* `import math as math`
+* `import statsmodels.formula.api as smf`
+* `from statsmodels.sandbox.regression.gmm import IV2SLS`
+* `from patsy import dmatrices, dmatrix`
+* `%matplotlib inline`
+* `import matplotlib.pyplot as plt`
+* `import seaborn as sn           # Library to create fancy graphs`
+
+#### The table below shows Stata vs. Python commands to perform different operations
+
+| Operatio            | Stata Command |  Python Command | 
 | -------------       | ------------- | -------------   |
 |_**Import Data**_    |               |                 |
 | Read csv            | `import delimited "dir\filename.csv", clear` |  `df = pd.read_csv('dir/filename.dta')`  |
