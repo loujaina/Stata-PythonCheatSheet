@@ -1,4 +1,4 @@
-# Stata - Python Cheat Sheet
+# Stata ->> Python Cheat Sheet
 
 N.B.: This Cheat Sheet is work-in-progress. I keep on adding commands as I learn them. 
 
@@ -14,8 +14,9 @@ N.B.: This Cheat Sheet is work-in-progress. I keep on adding commands as I learn
 * `import seaborn as sn           # Library to create fancy graphs`
 
 #### The table below shows Stata vs. Python commands to perform different operations
+In Python commands sometimes I write the code to import the relevant package and sometimes not. But if you just import all the packages above in the beginning of the code, you should not need to import anything else as you go
 
-| Operatio            | Stata Command |  Python Command | 
+| Operation           | Stata Command |  Python Command | 
 | -------------       | ------------- | -------------   |
 |_**Import Data**_    |               |                 |
 | Read csv            | `import delimited "dir\filename.csv", clear` |  `df = pd.read_csv('dir/filename.dta')`  |
