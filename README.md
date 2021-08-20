@@ -20,7 +20,7 @@ In Python commands sometimes I write the code to import the relevant package and
 | -------------       | ------------- | -------------   |
 |_**Import Data**_    |               |                 |
 | Read csv            | `import delimited "dir\filename.csv", clear` |  `df = pd.read_csv('dir/filename.dta')`  |
-| Read dta            | `use "dir\filename.dta", clear`              |  `df = pd.read_csv('dir/filename.dta')`  |
+| Read Stata file     | `use "dir\filename.dta", clear`              |  `df = pd.read_csv('dir/filename.dta')`  |
 | _**Generate variables**_ |          |                 |		
 | y = x^2             | `gen y = x^2 ` |  `df["y"] = np.power(df["x"], 2)` |
 | y = x + z           | `gen y = x + z` | `df["y"] = df["x"] + df["z"]`  |
@@ -38,6 +38,11 @@ In Python commands sometimes I write the code to import the relevant package and
 |Correlation matrix |  `correlate x y z` | `df_corr = df[['x', 'y', 'z']].copy()`<br>`df.corr()` |
 |_**Sorting**_  |               |                 |		
 | Sort the data by variable x | `sort x` | `df.sort_values('x', ascending=True)` |
+|_**Joining Dataset**_  |               |                 |		
+| One-to-one merge  | `use "path\df1.dta", clear` <br> `merge 1:1 varname using "path\df2.dta"`     |    `df3 = pd.merge(df1, df2, on='varname')` <br> OR <br> `df3 = pd.merge(df1, df2, left_on="varname_df1", right_on="varname_df2")`  |
+| Many-to-one merge  | `use "path\df1.dta", clear` <br> `merge m:1 varname using "path\df2.dta"`     |    `df3 = pd.merge(df1, df2, on='varname')` <br> OR <br> `df3 = pd.merge(df1, df2, left_on="varname_df1", right_on="varname_df2")`  |
+| Append datasets vertically | `use "path\df1.dta", clear` <br> `append using "path\df2.dta"`   |    `pd.concat([df1, df2]), ignore_index=True)` <br> OR <br> `df1.append(df2)`  |
+| Append datasets horizontally |    |  `pd.concat([df1, df2], axis='col')` | 
 |_**Collapse data**_  |               |                 |		
 | Frequency table     |	`collapse (count) x` | `collapsed_data = df.groupby('x')['x'].count()` |
 | _**OLS**_           |               |                 |
