@@ -41,14 +41,19 @@ In Python commands sometimes I write the code to import the relevant package and
 |_**Collapse data**_  |               |                 |		
 | Frequency table     |	`collapse (count) x` | `collapsed_data = df.groupby('x')['x'].count()` |
 | _**OLS**_           |               |                 |
-| Simple reg of y on x | `reg y x`	| `import statsmodels.formula.api as smf`<br> `print(ols = smf.ols(formula = "y ~ x", data=df).fit().summary())` |
+| Simple reg of y on x | `reg y x`	| `import statsmodels.formula.api as smf`<br> `print(smf.ols(formula = "y ~ x", data=df).fit().summary())` |
+| Generate predicted values of y | ` predict (xb) y_hat`    | `y_hat = smf.ols(formula = "y ~ x", data=data).fit().predict()` |
 | Reg y on categorical variable | `reg y i.a`	| `import statsmodels.formula.api as smf`<br> `print(ols = smf.ols(formula = "y ~ C(a)", data=df).fit().summary())` |
 |Fixed effects regression<br>(only unit FE)  |	`xtset cvar`<br>`xtreg y x, fe`<br>*OR*<br>`areg y x, absorb(cvar)` | `import statsmodels.formula.api as smf`<br> `print(fe = smf.ols(formula = "y ~ x + C(cvar)", data=df).fit().summary())` |  
 | _**IV regression (2SLS)**_           |               |                 |
 2sls of y on x with instrument z<br>(No controls) |  `ivreg y (x = z)` | `from statsmodels.sandbox.regression.gmm import IV2SLS`<br>`endog = df.y`<br>`exog=df.x`<br>`z = df.z`<br>`print(IV2SLS(y, x, instrument = z).fit().summary())` |
 2sls of y on x1 with instrument z<br>(With control x2) |  `ivreg y x2 (x1 = z)` | `from statsmodels.sandbox.regression.gmm import IV2SLS`<br>`from patsy import dmatrices, dmatrix`<br>`y, x = dmatrices('y~ x1 + x2', df)`<br>`z = dmatrix('z + x2', df)`<br>`print(IV2SLS(y, x, instrument = z).fit().summary())` |
 2sls of y on x with instrument z<br>(Add Fixed Effects) | `xtset cvar`<br>`xtivreg2 y (x = z), fe` | `from statsmodels.sandbox.regression.gmm import IV2SLS`<br>`from patsy import dmatrices, dmatrix`<br>`y, x = dmatrices('y~ x + C(cvar)', df)`<br>`z = dmatrix('z + C(cvar)', df)`<br>`print(IV2SLS(y, x, instrument = z).fit().summary())` |
+| _**Probit**_           |               |                 |
+| Probit model |    `probit y x1`    | `from statsmodels.discrete.discrete_model import Probit`<br>`X = sm.add_constant(df.x)`<br> `Y = df.y`<br> `print(Probit(Y, X).fit().summary())`    |
+| Predict y_hat from probit            |   ` predict (xb) yhat_probit`          |  `yhat_probit = Probit(Y, X).fit().predict()`   |
 | _**Plots**_           |               |                 |
 | Simple histogram            |  `histogram x`   | `%matplotlib inline`<br>`import matplotlib.pyplot as plt`<br>`plt.hist(df.x)` |
 | Simple scatterplot         | `scatter y x, xlab(x) ylab(y)` | `import matplotlib.pyplot as plt`<br>`plt.scatter(df.x, df.y)`<br>`plt.xlabel("x-label")`<br> `plt.ylabel("y-label")`<br> `plt.show()` |
+| Overlay scatterplot and regression line |   |  After predicting y_hat:<br> `plt.scatter(df.x, df.y)`<br> `plt.plot(df.x, y_hat)`<br> `plt.xlabel("X")`<br> `plt.ylabel("Y")`| 
 
