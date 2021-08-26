@@ -6,6 +6,7 @@ N.B.: This Cheat Sheet is work-in-progress. I keep on adding commands as I learn
 * `import numpy as np`
 * `import pandas as pd`
 * `import math as math`
+* `import statsmodels.api as sm`
 * `import statsmodels.formula.api as smf`
 * `from statsmodels.sandbox.regression.gmm import IV2SLS`
 * `from patsy import dmatrices, dmatrix`
@@ -46,11 +47,16 @@ In Python commands sometimes I write the code to import the relevant package and
 |_**Collapse data**_  |               |                 |		
 | Frequency table     |	`collapse (count) x` | `collapsed_data = df.groupby('x')['x'].count()` |
 | _**OLS**_           |               |                 |
-| Simple reg of y on x | `reg y x`	| `import statsmodels.formula.api as smf`<br> `print(smf.ols(formula = "y ~ x", data=df).fit().summary())` |
+| Simple reg of y on x | `reg y x`	| Use statsmodels or statsmodels forumula: <br> `print(smf.ols(formula = "y ~ x", data=df).fit().summary())` |
 | Generate predicted values of y | ` predict (xb) y_hat`    | `y_hat = smf.ols(formula = "y ~ x", data=data).fit().predict()` |
-| Reg y on categorical variable | `reg y i.a`	| `import statsmodels.formula.api as smf`<br> `print(ols = smf.ols(formula = "y ~ C(a)", data=df).fit().summary())` |
-|Fixed effects regression<br>(only unit FE)  |	`xtset cvar`<br>`xtreg y x, fe`<br>*OR*<br>`areg y x, absorb(cvar)` | `import statsmodels.formula.api as smf`<br> `print(fe = smf.ols(formula = "y ~ x + C(cvar)", data=df).fit().summary())` |  
-| _**IV regression (2SLS)**_           |               |                 |
+| Multiple reg of y on x1 & x2  | `reg y x1 x2`	| Use statsmodels forumula: <br> `print(smf.ols(formula = "y ~ x1 + x2", data=df).fit().summary())` <br> OR <br> Define X and y first, then use statsmodel: <br> `X = df[['x1', 'x2']]` <br> `y = df['y']` <br> `X = sm.add_constant(X)` <br> `print(sm.ols(model = "y ~ X).fit().summary())` | 
+| Reg y on categorical variable | `reg y i.a`	| Use statsmodels formula: <br> `print(ols = smf.ols(formula = "y ~ C(a)", data=df).fit().summary())` |
+| Reg with heteroskedasticity robust SE | `reg y x1 x2, robust`  | Use statsmodels formula: <br> `print(smf.ols(formula = "y ~ x1 + x2", data=df).fit(cov_type='HC3').summary())`  | 
+| _**Fixed effects regression (panel)**_           |               |                 |
+|Fixed effects regression <br> (only unit FE)  |	`xtset cvar`<br>`xtreg y x, fe`<br>*OR*<br>`areg y x, absorb(cvar)` | `import statsmodels.formula.api as smf`<br> `print(fe = smf.ols(formula = "y ~ x + C(cvar)", data=df).fit().summary())` |
+|Fixed effects regression <br> (unit and time FE)  |	`xtset cvar timevar`<br>`xtreg y x i.timevar, fe`<br>*OR*<br>`areg y x, absorb(cvar timevar)` | `import statsmodels.formula.api as smf` <br> `print(fe = smf.ols(formula = "y ~ x + C(cvar) + C(timevar)", data=df).fit().summary())` |
+|Fixed effects regression with clustered standard errors <br> (unit and time FE)  |	`xtset cvar timevar` <br> `xtreg y x i.timevar, fe vce(cluster cvar)` | `import statsmodels.formula.api as smf`<br> `print(fe = smf.ols(formula = "y ~ x + C(cvar) + C(timevar)", data=df).fit(cov_type='cluster', cov_kwds={'cvar': cvar}).summary())` |
+| _**IV regression (2SLS)**_          |               |                 |
 2sls of y on x with instrument z<br>(No controls) |  `ivreg y (x = z)` | `from statsmodels.sandbox.regression.gmm import IV2SLS`<br>`endog = df.y`<br>`exog=df.x`<br>`z = df.z`<br>`print(IV2SLS(y, x, instrument = z).fit().summary())` |
 2sls of y on x1 with instrument z<br>(With control x2) |  `ivreg y x2 (x1 = z)` | `from statsmodels.sandbox.regression.gmm import IV2SLS`<br>`from patsy import dmatrices, dmatrix`<br>`y, x = dmatrices('y~ x1 + x2', df)`<br>`z = dmatrix('z + x2', df)`<br>`print(IV2SLS(y, x, instrument = z).fit().summary())` |
 2sls of y on x with instrument z<br>(Add Fixed Effects) | `xtset cvar`<br>`xtivreg2 y (x = z), fe` | `from statsmodels.sandbox.regression.gmm import IV2SLS`<br>`from patsy import dmatrices, dmatrix`<br>`y, x = dmatrices('y~ x + C(cvar)', df)`<br>`z = dmatrix('z + C(cvar)', df)`<br>`print(IV2SLS(y, x, instrument = z).fit().summary())` |
