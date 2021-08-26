@@ -9,10 +9,11 @@ N.B.: This Cheat Sheet is work-in-progress. I keep on adding commands as I learn
 * `import statsmodels.api as sm`
 * `import statsmodels.formula.api as smf`
 * `from statsmodels.sandbox.regression.gmm import IV2SLS`
+* `from linearmodels import PanelOLS, FamaMacBeth  #you can use this for panel models with FE` 
 * `from patsy import dmatrices, dmatrix`
 * `%matplotlib inline`
 * `import matplotlib.pyplot as plt`
-* `import seaborn as sn           # Library to create fancy graphs`
+* `import seaborn as sn           #Library to create fancy graphs`
 
 #### The table below shows Stata vs. Python commands to perform different operations
 In Python commands sometimes I write the code to import the relevant package and sometimes not. But if you just import all the packages above in the beginning of the code, you should not need to import anything else as you go
@@ -51,11 +52,12 @@ In Python commands sometimes I write the code to import the relevant package and
 | Generate predicted values of y | ` predict (xb) y_hat`    | `y_hat = smf.ols(formula = "y ~ x", data=data).fit().predict()` |
 | Multiple reg of y on x1 & x2  | `reg y x1 x2`	| Use statsmodels forumula: <br> `print(smf.ols(formula = "y ~ x1 + x2", data=df).fit().summary())` <br> OR <br> Define X and y first, then use statsmodel: <br> `X = df[['x1', 'x2']]` <br> `y = df['y']` <br> `X = sm.add_constant(X)` <br> `print(sm.ols(model = "y ~ X).fit().summary())` | 
 | Reg y on categorical variable | `reg y i.a`	| Use statsmodels formula: <br> `print(ols = smf.ols(formula = "y ~ C(a)", data=df).fit().summary())` |
-| Reg with heteroskedasticity robust SE | `reg y x1 x2, robust`  | Use statsmodels formula: <br> `print(smf.ols(formula = "y ~ x1 + x2", data=df).fit(cov_type='HC3').summary())`  | 
+| Reg with heteroskedasticity robust SE | `reg y x1 x2, robust`  | Use statsmodels formula: <br> `print(smf.ols(formula = "y ~ x1 + x2", data=df).fit(cov_type='HC3').summary())`  |
+| Reg with Driscoll-Kraay SE |   | Use statsmodels formula: <br> `print(smf.ols(formula = "y ~ x1 + x2", data=df).fit(cov_type='nw-groupsum', cov_kwds={'time': np.array(df.timevar),'groups': np.array(df.cvar), 'maxlags': 5}, use_t=True).summary())`  |
 | _**Fixed effects regression (panel)**_           |               |                 |
-|Fixed effects regression <br> (only unit FE)  |	`xtset cvar`<br>`xtreg y x, fe`<br>*OR*<br>`areg y x, absorb(cvar)` | `import statsmodels.formula.api as smf`<br> `print(fe = smf.ols(formula = "y ~ x + C(cvar)", data=df).fit().summary())` |
-|Fixed effects regression <br> (unit and time FE)  |	`xtset cvar timevar`<br>`xtreg y x i.timevar, fe`<br>*OR*<br>`areg y x, absorb(cvar timevar)` | `import statsmodels.formula.api as smf` <br> `print(fe = smf.ols(formula = "y ~ x + C(cvar) + C(timevar)", data=df).fit().summary())` |
-|Fixed effects regression with clustered standard errors <br> (unit and time FE)  |	`xtset cvar timevar` <br> `xtreg y x i.timevar, fe vce(cluster cvar)` | `import statsmodels.formula.api as smf`<br> `print(fe = smf.ols(formula = "y ~ x + C(cvar) + C(timevar)", data=df).fit(cov_type='cluster', cov_kwds={'groups': df['cvar']}).summary())` <br> Does not give the same SE as Stata! |
+|Fixed effects regression <br> (only unit FE)  |	`xtset cvar`<br>`xtreg y x, fe`<br>*OR*<br>`areg y x, absorb(cvar)` | Using statsmodels formula: <br> `print(fe_panel = smf.ols(formula = "y ~ x + C(cvar)", data=df).fit().summary())` <br> Alternatively, you can use `linearmodels`: <br> In `linearmodels`, you need to define the index for the dataset in the form of EntityEffect, TimeEffect: <br> `df2 = df.set_index(['cvar', 'timevar'])` <br> `print(fe_panel = PanelOLS.from_formula('y ~ x + EntityEffects', data=df2).fit().summary())` |
+|Fixed effects regression <br> (unit and time FE)  |	`xtset cvar timevar`<br>`xtreg y x i.timevar, fe`<br>*OR*<br>`areg y x, absorb(cvar timevar)` | Using statsmodels formula: <br> `print(fe = smf.ols(formula = "y ~ x + C(cvar) + C(timevar)", data=df).fit().summary())` <br> Alternatively, you can use `linearmodels`to avoid showing all FE in the regression output: <br> You need to define the index for the dataset: <br> `df2 = df.set_index(['cvar', 'timevar'])` <br> `print(fe_panel = PanelOLS.from_formula('y ~ x + EntityEffects + TimeEffects', data=df2).fit().summary())`|
+|Fixed effects regression with clustered standard errors <br> (unit and time FE) <br> One-way clustering by unit |	`xtset cvar timevar` <br> `xtreg y x i.timevar, fe vce(cluster cvar)` | With linearmodels : <br> `df2 = df.set_index(['cvar', 'timevar'])` <br> `print(fe = PanelOLS.from_formula('y ~ x + EntityEffects + TimeEffects', data=df2).fit(cov_type='clustered', cluster_entity=True, cluster_time=False).summary())` |
 | _**IV regression (2SLS)**_          |               |                 |
 2sls of y on x with instrument z<br>(No controls) |  `ivreg y (x = z)` | `from statsmodels.sandbox.regression.gmm import IV2SLS`<br>`endog = df.y`<br>`exog=df.x`<br>`z = df.z`<br>`print(IV2SLS(y, x, instrument = z).fit().summary())` |
 2sls of y on x1 with instrument z<br>(With control x2) |  `ivreg y x2 (x1 = z)` | `from statsmodels.sandbox.regression.gmm import IV2SLS`<br>`from patsy import dmatrices, dmatrix`<br>`y, x = dmatrices('y~ x1 + x2', df)`<br>`z = dmatrix('z + x2', df)`<br>`print(IV2SLS(y, x, instrument = z).fit().summary())` |
