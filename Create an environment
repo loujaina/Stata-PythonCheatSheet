@@ -2,15 +2,23 @@
 
 This is needed when Python is acting funny (there are probably more scientific reasons that I still have not figured out)
 
-Here I re-create an environment for pandas
+Here I re-create an environment
 
 ## Steps
 * Open anaconda command prompt
 * type `conda create --name ENVIRONMENT python=3.10 pandas
 * Follow the instructions
+* activate the environment
+            `conda activate ENVIRONMENT`
 
 ## Add packages to the environment
 * pyarrow: Needed to save and use parquet files
       `conda install -c conda -forge pyarrow`
 * Jupyter: Needed to re-launch Jupyter notebook in the new environment
       `conda install -c conda -forge jupyter`
+      
+ ## Open Jupyter notebook from the new environment
+ In the prompt, go to the directory where the notebook is
+      `cd PATH`
+ Then open `jupyter notebook`
+ 
