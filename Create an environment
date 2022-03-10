@@ -1,0 +1,16 @@
+# Create a new environment in Python
+
+This is needed when Python is acting funny (there are probably more scientific reasons that I still have not figured out)
+
+Here I re-create an environment for pandas
+
+## Steps
+* Open anaconda command prompt
+* type `conda create --name ENVIRONMENT python=3.10 pandas
+* Follow the instructions
+
+## Add packages to the environment
+* pyarrow: Needed to save and use parquet files
+      `conda install -c conda -forge pyarrow`
+* Jupyter: Needed to re-launch Jupyter notebook in the new environment
+      `conda install -c conda -forge jupyter`
